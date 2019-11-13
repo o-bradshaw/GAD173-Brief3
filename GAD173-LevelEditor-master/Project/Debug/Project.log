@@ -1,0 +1,27 @@
+﻿  Main.cpp
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Editor.h(74,25): warning C4244:  'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Editor.h(74,22): warning C4244:  'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Editor.h(151,25): warning C4244:  'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Editor.h(151,22): warning C4244:  'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Editor.h(487,24): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Editor.h(519,21): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Editor.h(538,21): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Editor.h(557,21): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Editor.h(576,21): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Editor.h(595,21): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(53,67): warning C4244:  'argument': conversion from 'const int' to 'T', possible loss of data
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(53,67): warning C4244:         with
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(53,67): warning C4244:         [
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(53,67): warning C4244:             T=float
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(53,67): warning C4244:         ]
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(56,62): warning C4244:  'argument': conversion from 'const int' to 'T', possible loss of data
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(56,62): warning C4244:         with
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(56,62): warning C4244:         [
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(56,62): warning C4244:             T=float
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(56,62): warning C4244:         ]
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(56,49): warning C4244:  'argument': conversion from 'const int' to 'T', possible loss of data
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(56,49): warning C4244:         with
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(56,49): warning C4244:         [
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(56,49): warning C4244:             T=float
+C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Main.cpp(56,49): warning C4244:         ]
+  Project.vcxproj -> C:\Users\obradshaw\Desktop\GAD173-LevelEditor-master\Project\Debug\Project.exe
