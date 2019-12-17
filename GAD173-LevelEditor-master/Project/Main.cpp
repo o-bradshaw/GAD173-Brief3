@@ -1,30 +1,28 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <fstream>
-#include <Windows.h>
 #include <list>
 #include <functional>
 #include "Editor.h"
 #include "Game.h"
-
+#include "Menu.h"
 using namespace std;
 
 int main()
 {
 	EditorClass myEditor;
 	GameClass myGame;
+	//MenuClass myMenu;
 
 	//Enum for switching modes
-	enum GameType {
+	enum GameType 
+	{
 		Editor,
-		Game
+		Game,
+		Menu
 	};
 
-	GameType myGameType = Editor;
-
-	//Menu screen with "select mode"
-	//clicking on a mode or hitting a button changes myGameType
-	//once mygametype is selected go to switch
+	GameType myGameType = Game;
 
 	switch (myGameType)
 	{
@@ -34,7 +32,6 @@ int main()
 			return EXIT_FAILURE;
 		}
 		return myEditor.Update();
-		return 0;
 		break;
 	case Game:
 		if (!myGame.Start())
@@ -42,8 +39,14 @@ int main()
 			return EXIT_FAILURE;
 		}
 		return myGame.Update();
-		return 0;
 		break;
+	/*case Menu:
+		if (!myMenu.Start())
+		{
+			return EXIT_FAILURE;
+		}
+		return myMenu.Update();
+		break;*/
 	}
 }
 
@@ -206,7 +209,7 @@ int EditorClass::Update()
 
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 		{
-			PrintToConsole(tile);
+			printToConsole(tile);
 		}
 
 		//Draw everything onto screen
@@ -217,12 +220,240 @@ int EditorClass::Update()
 
 bool GameClass::Start()
 {
-	//setup game
+	//Setup game
+	window.create(sf::VideoMode(windowWidth, windowHeight), "Game");
+
+	//Init Tiles
+	for (int i = 0; i < x; i++) //Rows
+	{
+		for (int j = 0; j < y; j++) //Columns
+		{
+			tile[i][j].init(i * 32 + ((windowWidth / 2) - ((32 * x) / 2)), j * 32);
+		}
+	}
+
+	//Load tiles/level
+	LoadLevel("save", tile);
+
+	player.nextPos = player.getPosition();
+
 	return true;
 }
 
 int GameClass::Update()
 {
-	//run game
+	//Game loop
+	while (window.isOpen())
+	{
+		//Prepare window for displaying
+		window.clear(sf::Color::White);
+		//Tracking deltaTime
+		deltaTime = clock.restart().asSeconds();
+
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			switch (event.type)
+			{
+			case sf::Event::Closed:
+				window.close();
+				break;
+			}
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		{
+			//Move right
+			if (player.grounded)
+			{
+				player.velocity.x += player.speed * deltaTime;
+			}
+			else
+			{
+				player.velocity.x += player.speed / 3 * deltaTime;
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		{
+			//Move left
+			if (player.grounded)
+			{
+				player.velocity.x -= player.speed * deltaTime;
+			}
+			else
+			{
+				player.velocity.x -= player.speed / 3 * deltaTime;
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		{
+			if (player.grounded)
+			{
+				player.grounded = false;
+				player.velocity.y += -player.jumpSpeed + deltaTime;
+			}
+		}
+
+		//Friction
+		if (player.grounded)
+		{
+			if (abs(player.velocity.x) > 0.01f)
+			{
+				player.velocity.x -= friction * deltaTime;
+			}
+			else
+			{
+				player.velocity.x = 0;
+			}
+		}
+
+		//Maximum horizontal absolute velocity
+		if (abs(player.velocity.x) > 0.6f)
+		{
+			player.velocity.x = 0.6f * sign(player.velocity.x);
+		}
+
+		//Gravity
+		if (player.velocity.y < 1.0f)
+		{
+			player.velocity.y += -gravity * deltaTime;
+		}
+		else if (player.velocity.y < -1.0f)
+		{
+			player.velocity.y = -1.0f;
+		}
+
+		//Players next potential position if they aren't obstructed
+		player.nextPos = player.getPosition() + player.velocity;
+
+		//Projecting the 'hit box' of player for next potential position
+		player.nextRect = sf::FloatRect(player.nextPos, sf::Vector2f(32.f, 32.f));
+
+		//Set grounded to false - later set it to true if on the ground
+		player.grounded = false;
+
+		for (int i = 0; i < x; i++)
+		{
+			for (int j = 0; j < y; j++)
+			{
+				//Draw tiles
+				tile[i][j].refreshTile();
+				window.draw(tile[i][j]);
+
+				//Check for collisions
+				if (tile[i][j].type == Tile::Type::Platform)
+				{
+					Collision pcol = player.CollisionCheck(tile[i][j].sprite.getGlobalBounds());
+					if (pcol.hit)
+					{
+						//Hitting something vertically
+						if (pcol.dir.x == 0)
+						{
+							//Is it the player hitting the tile below
+							if (pcol.dir.y > 0.0f)
+							{
+								//We're on top of the tile
+								player.nextPos.y = tile[i][j].sprite.getGlobalBounds().top - 32 - 0.1f;
+								player.grounded = true;
+								player.velocity.y = 0.0f;
+							}
+							else
+							{
+								player.grounded = false;
+								player.nextPos.y = tile[i][j].sprite.getGlobalBounds().top + tile[i][j].sprite.getGlobalBounds().height + 0.01f;
+								player.velocity.y = 0.0f;
+							}
+						}
+						else //Horizontal
+						{
+							if (pcol.dir.x >= 0.0f) //right side
+							{
+								//we want to stop and not move into the next tile
+								player.nextPos.x = tile[i][j].sprite.getGlobalBounds().left - 32;
+								player.velocity.x = 0.0f;
+							}
+							else // left side
+							{
+								player.nextPos.x = tile[i][j].sprite.getGlobalBounds().left + tile[i][j].sprite.getGlobalBounds().width;
+								player.velocity.x = 0.0f;
+							}
+						}
+					}
+				}
+				else if (tile[i][j].actor.type == Actor::Type::Coin)
+				{
+					//Add coin, then destroy(change type to none)
+					//Check Collision
+					Collision pcol = player.CollisionCheck(tile[i][j].sprite.getGlobalBounds());
+					if (pcol.hit)
+					{
+						player.coins++;
+						tile[i][j].actor.type = Actor::Type::None;
+						tile[i][j].refreshTile();
+					}
+				}
+				else if (tile[i][j].type == Tile::Type::Lava)
+				{
+					Collision pcol = player.CollisionCheck(tile[i][j].sprite.getGlobalBounds());
+					if (pcol.hit)
+					{
+						player.lives--;
+						//Respawn player
+					}
+				}
+			}
+		}
+		player.setPosition(player.nextPos);
+		window.draw(player);
+		window.display();
+	}
 	return 0;
 }
+
+/*
+bool MenuClass::Start()
+{
+	menuView = sf::View(sf::FloatRect(0.f,windowWidth ,0.f, windowHeight));
+	menuView.setViewport(sf::FloatRect(0, 0, 0, 0));
+
+	//Setup game
+	window.create(sf::VideoMode(windowWidth, windowHeight), "Main Menu");
+
+	return true;
+}
+
+int MenuClass::Update()
+{
+	//Game Loop
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			switch (event.type)
+			{
+			case sf::Event::Closed:
+				window.close();
+				break;
+			}
+		}
+
+		//Prepare the window for displaying stuff
+		window.clear(sf::Color::White);
+
+		//Track mouse position
+		worldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
+		//Save and Load functionality
+		menu.editorButton.checkClick(std::bind(&MenuClass::editor, this, tile), worldPos);
+		menu.gameButton.checkClick(std::bind(&MenuClass::game, this, tile), worldPos);
+
+		//Track mouse position for tiles
+		worldPos = window.mapPixelToCoords(sf::Mouse::getPosition(window), window.getView());
+
+		//Draw everything onto screen
+		window.display();
+	}
+	return 0;
+}
+*/
