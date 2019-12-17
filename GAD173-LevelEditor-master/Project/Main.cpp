@@ -234,7 +234,6 @@ bool GameClass::Start()
 
 	//Load tiles/level
 	LoadLevel("save", tile);
-
 	player.nextPos = player.getPosition();
 
 	return true;
@@ -299,11 +298,11 @@ int GameClass::Update()
 		{
 			if (abs(player.velocity.x) > 0.01f)
 			{
-				player.velocity.x -= friction * deltaTime;
+				player.velocity.x -= friction * deltaTime*(sign(player.velocity.x));
 			}
 			else
 			{
-				player.velocity.x = 0;
+				player.velocity.x = 0.0f;
 			}
 		}
 

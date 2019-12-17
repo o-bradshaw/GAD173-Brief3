@@ -3,8 +3,6 @@ using namespace std;
 
 GameClass::GameClass()
 {
-	static const int x = 30;
-	static const int y = 20;
 	//Setup window size
 	const int windowWidth = 1025;
 	const int windowHeight = 650;
@@ -153,7 +151,10 @@ void GameClass::LoadLevel(string levelName, Tile** inctile)
 						string xStr = posString.substr(0, posString.find(','));
 						string yStr = posString.substr(posString.find(',') + 1, posString.length() - 1);
 						cout << "x = " << xStr << ", y = " << yStr << "\n";
-						inctile[stoi(xStr)][stoi(yStr)].actor.ChangeActor(Actor::Type::Player);
+						player.type = Actor::Type::Player;
+						player.init(stoi(xStr) * 32 + ((windowWidth / 2) - ((32 * x) / 2)), stoi(yStr) * 32);
+						player.startPos = sf::Vector2f(stoi(xStr) * 32 + ((windowWidth / 2) - ((32 * x) / 2)), stoi(yStr) * 32);
+						player.setPosition(player.startPos);
 
 						lineHold[curStart] = '<';
 						lineHold[curEnd] = '>';
